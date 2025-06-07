@@ -1,0 +1,107 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  SONAR_HOST_URL: https://buttons-mlb-corn-peterson.trycloudflare.com
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+  BACKEND_IMAGE: raulhr16/backend
+  FRONTEND_IMAGE: raulhr16/frontend
+
+jobs:
+  test-y-analisis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonando repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalando node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Instalando dependencias de backend
+        run: npm ci
+        working-directory: backend
+
+      - name: Lanzando tests de backend
+        run: npm test -- --coverage
+        working-directory: backend
+
+      - name: Instalando dependencias de frontend
+        run: npm ci
+        working-directory: frontend
+
+      - name: Lanzando tests de frontend
+        run: npm test -- --coverage
+        working-directory: frontend
+
+  analisis-frontend:
+    needs: test-y-analisis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Escanear frontend
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=app-front-raulhr
+            -Dsonar.sources=./frontend
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
+            -Dsonar.login=${{ env.SONAR_TOKEN }}
+
+      - name: Esperar quality gate frontend
+        uses: SonarSource/sonarcloud-quality-gate-action@v1.1
+        with:
+          sonar-token: ${{ env.SONAR_TOKEN }}
+
+  analisis-backend:
+    needs: test-y-analisis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Escanear backend
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=app-back-raulhr
+            -Dsonar.sources=./backend
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
+            -Dsonar.login=${{ env.SONAR_TOKEN }}
+
+      - name: Esperar quality gate backend
+        uses: SonarSource/sonarcloud-quality-gate-action@v1.1
+        with:
+          sonar-token: ${{ env.SONAR_TOKEN }}
+
+  quality-gate:
+    needs: [analisis-frontend, analisis-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Ambos quality gates completados"
+
+  build-and-push:
+    needs: quality-gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonando repositorio
+        uses: actions/checkout@v3
+
+      - name: Iniciando sesión en docker
+        run: echo "${{ env.DOCKER_PASS }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
+
+      - name: Buildeando y pusheando la última versión del backend
+        run: |
+          docker build -t $BACKEND_IMAGE:$GITHUB_RUN_NUMBER ./backend
+          docker push $BACKEND_IMAGE:$GITHUB_RUN_NUMBER
+
+      - name: Buildeando y pusheando la última versión del frontend
+        run: |
+          docker build -t $FRONTEND_IMAGE:$GITHUB_RUN_NUMBER ./frontend
+          docker push $FRONTEND_IMAGE:$GITHUB_RUN_NUMBER
