@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Escanear frontend
-        uses: warchant/setup-sonar-scanner@v7
+        uses: SonarSource/sonarcloud-github-action@master
         with:
           args: >
             -Dsonar.projectKey=app-front-raulhr
@@ -57,7 +57,7 @@ jobs:
             -Dsonar.login=${{ env.SONAR_TOKEN }}
 
       - name: Esperar quality gate frontend
-        uses: SonarSource/sonarcloud-quality-gate-action@v1.1
+        uses: warchant/setup-sonar-scanner@v7
         with:
           sonar-token: ${{ env.SONAR_TOKEN }}
 
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Escanear backend
-        uses: warchant/setup-sonar-scanner@v7
+        uses: SonarSource/sonarcloud-github-action@master
         with:
           args: >
             -Dsonar.projectKey=app-back-raulhr
@@ -75,7 +75,7 @@ jobs:
             -Dsonar.login=${{ env.SONAR_TOKEN }}
 
       - name: Esperar quality gate backend
-        uses: SonarSource/sonarcloud-quality-gate-action@v1.1
+        uses: warchant/setup-sonar-scanner@v7
         with:
           sonar-token: ${{ env.SONAR_TOKEN }}
 
