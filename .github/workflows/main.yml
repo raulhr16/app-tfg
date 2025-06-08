@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  SONAR_HOST_URL: https://buttons-mlb-corn-peterson.trycloudflare.com
+  SONAR_HOST_URL: https://lately-nelson-coffee-brisbane.trycloudflare.com
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
@@ -55,6 +55,10 @@ jobs:
           name: frontend-coverage
           path: frontend/coverage
 
+      - name: Mostrar archivo de cobertura frontend
+        run: cat frontend/coverage/lcov.info
+        
+
   analisis-frontend:
     needs: test-y-analisis
     runs-on: ubuntu-latest
@@ -71,12 +75,11 @@ jobs:
       - name: Escanear frontend
         uses: SonarSource/sonarcloud-github-action@master
         with:
+          projectBaseDir: frontend
           args: >
-            -Dsonar.projectKey=app-front-raulhr
-            -Dsonar.sources=./frontend
             -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
             -Dsonar.login=${{ env.SONAR_TOKEN }}
-
+        
       - name: Esperar quality gate frontend
         uses: warchant/setup-sonar-scanner@v7
         with:
@@ -88,7 +91,7 @@ jobs:
     steps:
       - name: Clonando repositorio
         uses: actions/checkout@v3
-        
+
       - name: Descargar cobertura backend
         uses: actions/download-artifact@v4
         with:
@@ -98,9 +101,8 @@ jobs:
       - name: Escanear backend
         uses: SonarSource/sonarcloud-github-action@master
         with:
+          projectBaseDir: backend
           args: >
-            -Dsonar.projectKey=app-back-raulhr
-            -Dsonar.sources=./backend
             -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
             -Dsonar.login=${{ env.SONAR_TOKEN }}
 
@@ -135,3 +137,4 @@ jobs:
         run: |
           docker build -t $FRONTEND_IMAGE:$GITHUB_RUN_NUMBER ./frontend
           docker push $FRONTEND_IMAGE:$GITHUB_RUN_NUMBER
+

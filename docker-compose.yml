@@ -13,8 +13,7 @@ services:
       - ./database:/var/lib/postgresql/data
 
   backend:
-    build:
-      context: ./backend
+    image: raulhr16/backend:4
     container_name: backend-app
     restart: always
     depends_on:
@@ -29,8 +28,7 @@ services:
       - "3000:3000"
 
   frontend:
-    build:
-      context: ./frontend
+    image: raulhr16/frontend:4
     container_name: frontend-app
     restart: always
     depends_on:
