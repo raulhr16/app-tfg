@@ -5,7 +5,6 @@ import { UserModule } from './user/user.module';
 import { VoteModule } from './vote/vote.module';
 import { User } from './user/user.entity';
 import { Vote } from './vote/vote.entity';
-import { PrometheusModule } from "@willsoto/nestjs-prometheus";
 
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { PrometheusModule } from "@willsoto/nestjs-prometheus";
     AuthModule,
     UserModule,
     VoteModule,
-    PrometheusModule.register()
   ],
 })
 export class AppModule {}
