@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  SONAR_HOST_URL: https://sight-rap-wed-maximum.trycloudflare.com
+  SONAR_HOST_URL: https://aquatic-space-sessions-change.trycloudflare.com
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
