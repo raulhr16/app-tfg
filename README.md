@@ -2,7 +2,7 @@
 
 Aplicación web full-stack que permite a los usuarios registrarse, iniciar sesión y votar entre dos equipos de fútbol: **Sevilla FC** y **Real Betis Balompié**. Cada usuario puede emitir **solo un voto**. Si cambia de equipo, el voto anterior se elimina y se registra el nuevo.
 
-# Prueba de demostracion
+# Hola
 
 ## Tecnologías utilizadas
 
