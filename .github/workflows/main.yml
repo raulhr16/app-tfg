@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  SONAR_HOST_URL: https://peru-beings-copied-apart.trycloudflare.com
+  SONAR_HOST_URL: https://books-munich-romance-arm.trycloudflare.com
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
